@@ -1,0 +1,20 @@
+{
+  "name": "connect4",
+  "version": "0.0.1",
+  "description": "Play connect4 online",
+  "main": "server.js",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "browserify": "^16.5.0",
+    "readline-sync": "^1.4.10",
+    "uuidv5": "^1.0.0",
+    "ws": "^7.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Tyler Anderson",
+  "license": "ISC"
+}

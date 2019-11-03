@@ -1,0 +1,103 @@
+@font-face {
+  font-family: PlayFair;
+  src: url('PlayfairDisplay-Regular.ttf');
+}
+
+@font-face {
+  font-family: PlayFair;
+  src: url('PlayfairDisplay-Bold.ttf');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: Merriweather;
+  src: url('Merriweather-Regular.ttf');
+}
+
+@font-face {
+  font-family: Merriweather;
+  src: url('Merriweather-Bold.ttf');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: PTMono;
+  src: url('PTMono-Regular.ttf');
+}
+
+@font-face {
+  font-family: Modak;
+  src: url('Modak-Regular.ttf');
+}
+
+#title {
+  font-family: PlayFair;
+  color: white;
+  text-align: center;
+  font-size: 70px;
+}
+
+#footer {
+  /*
+  font-family: Modak;
+  font-weight: normal;
+  */
+  font-family: PlayFair;
+  color: white;
+  text-align: center;
+  font-size: 70px;
+}
+
+.login-window {
+  position: absolute;
+  top: 0;
+  left: 10%;
+  font-family: PTMono;
+  margin: auto;
+  margin-top: 70px;
+  width: 500px;
+  /*height: 290px;  */
+  padding: 10px;
+  text-align: center;
+  background-color: white;
+  box-shadow: 2px 2px 5px grey; 
+}
+
+.input {
+  font-family: PTMono;
+  font-size: 20px;
+  padding: 10px;
+  border: none;
+}
+
+/*
+.input:focus {
+  background-color: gainsboro;
+}
+*/
+
+.button {
+  font-family: PTMono;
+  /* red/orange
+  background-color: #FF4102;
+  */
+  background-color: grey;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.login-button:hover {
+  /* Blue
+  background-color: #008CBA;
+  */
+  background-color: darkgrey;
+}
+
+.login-failure {
+  color: #008CBA;
+}

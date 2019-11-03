@@ -1,0 +1,8 @@
+.piece {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  height: 25vh;
+  width: 25vw;
+}
+

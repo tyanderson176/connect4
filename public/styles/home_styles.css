@@ -1,0 +1,167 @@
+body {
+  position: relative;
+  margin-top: 50px;
+  color: #82E0AA;
+  background-color: #1B1A1A;
+}
+
+@font-face {
+  font-family: PlayFair;
+  src: url('PlayfairDisplay-Regular.ttf');
+}
+
+@font-face {
+  font-family: PlayFair;
+  src: url('PlayfairDisplay-Bold.ttf');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: Merriweather;
+  src: url('Merriweather-Regular.ttf');
+}
+
+@font-face {
+  font-family: Merriweather;
+  src: url('Merriweather-Bold.ttf');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: PTMono;
+  src: url('styles/PTMono-Regular.ttf');
+}
+
+.nav-bar {
+  font-family: PTMono;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: right;
+  height: 30px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+}
+
+.nav-contents {
+  margin-right: 50px;
+}
+
+.title {
+  font-family: PTMono;
+
+}
+
+.comment {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-bottom: 0px solid gainsboro;
+  box-shadow: 0px 0px 0px grey; 
+  font-size: 16px;
+  font-family: PTMono;
+}
+
+.comment-content {
+  padding-top: 5px;
+}
+
+.comment-header {
+  color: #D2B4DE;
+}
+
+.user-tag {
+  font-weight: bold;
+/*  color: black; */
+}
+
+.bounding-box {
+  margin-top: 100px;
+  margin-left: 10%;
+  position: relative;
+  width: 80%;
+  height: 300px;
+}
+
+/*
+.comment-bar {
+  font-family: PTMono;
+  margin-left: 0px;
+/*  margin-bottom: 10px;*/
+/*
+  position: absolute;
+  height: 18.5%;
+  width: 80%;
+  bottom: 0;
+  background-color: gainsboro;
+  border: 1px solid black;
+}
+*/
+
+.comment-field {
+  font-family: PTMono;
+  color: white;
+  margin-top: 15px; 
+  width: 90%;
+  border-radius: 0px;
+  border: 1px solid darkgrey;
+  padding: 5px;
+  background-color: white;
+  background-color: #1B1A1A;
+  position: absolute;
+  bottom: 0;
+/*  font-size: 16px; */
+}
+
+/*
+.comment-button {
+  font-family: PTMono;
+  background-color: lightgrey;
+  border: none;
+  color: white;
+  padding: 7px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.comment-button:hover {
+  background-color: grey;
+}
+*/
+
+.comment-box {
+  margin-top: 0px;
+  margin-bottom: 100px;
+  margin-left: 0px;
+  /*height: calc(vh100);*/
+  height: 90%;
+  /*margin-bottom: 120px;*/
+  overflow-y: scroll;
+}
+
+.message {
+  width: 100%;
+  margin: auto;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid gainsboro;
+  background-color: white;
+}
+
+#gameboard {
+  font-family: PTMono;
+  font-size: 20px;
+  border: 1px solid grey;
+/*  margin-left: 40%; */
+/*  margin-right: auto;*/
+/*  text-align: center;*/
+}
+
+#gametable {
+  font-family: PTMono;
+  font-size: 20px;
+  margin-left: 40%;
+  margin-right: auto;
+  text-align: center;
+}
