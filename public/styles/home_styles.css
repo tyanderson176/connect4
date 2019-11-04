@@ -149,6 +149,10 @@ body {
   background-color: white;
 }
 
+.dummy-window {
+  background-color: white;
+}
+
 #gameboard {
   font-family: PTMono;
   font-size: 20px;

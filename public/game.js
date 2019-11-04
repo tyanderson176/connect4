@@ -1,126 +1,93 @@
-class ConnectFourHTMLTable {
+const Login = require('./login.js');
+const Chat = require('./chat.js');
+const Game = require('./connect_four.js');
+const Home = require('./home.js');
+const Utils = require('./public_utils.js');
 
-  constructor () {
-    this.root = document.createElement('div');
-    this.numColumns = 7;
-    this.numRows = 6;
-    
-    this.root.append(this.gameInfoElement());
-    this.root.append(this.boardElement());
-    
-    this.markerPosition = 0;
-  }
+/* Initialize Board */
 
-  boardElement() {
-    const table = document.createElement('table');
-    table.id = 'gametable';
+board = new Game.ConnectFourGame();
+document.querySelector('#gameboard').append(board.displayHTML);
 
-    const markerRow = document.createElement('tr');
-    markerRow.id = 'markerrow';
-    for(var i=0; i<this.numColumns; ++i) {
-      markerRow.append(this.makeTableEntry( (i == 0) ? '*' : '', 'marker'+i));
+/* Websocket */
+
+function connect() {
+  let serverUrl = "ws://" + document.location.hostname + ":3000";
+
+  wsocket = new WebSocket(serverUrl, "json");
+  wsocket.onopen = (evt) => {
+    console.log("Websocket connected.");
+  };
+
+  wsocket.onmessage = (message) => {
+    const data = JSON.parse(message.data);
+    if (data.type == 'chat') {
+      Chat.post(data);
+    } else if (data.type == 'game') {
+      board.update(data.content.board, data.content.activePlayer, 
+                   data.content.winner);
     }
-    table.append(markerRow);
-
-    for(var i=0; i<this.numRows; ++i) {
-      const rowElement = document.createElement('tr');
-      for(var j=0; j<this.numColumns; ++j) {
-        rowElement.append(this.makeTableEntry('_', 'pos(' + i + ',' + j + ')'));
-      }
-      table.append(rowElement);
-    }
-
-    const columnLabels = document.createElement('tr');
-    for(var i=0; i<this.numColumns; ++i) {
-      columnLabels.append(this.makeTableEntry(i+1, 'label'+i));
-    }
-    table.append(columnLabels);
-
-    return table;
   }
 
-  makeTableEntry(content, id) {
-    const entry = document.createElement('td');
-    entry.id = id;
-    entry.innerHTML = content;
-    return entry;
-  }
-
-  gameInfoElement() {
-    const infoElement = document.createElement('div');
-    infoElement.id = 'gameinfo';
-    infoElement.append(this.makeInfoEntry('Current Player: ', 'activeplayer', ''));
-    infoElement.append(this.makeInfoEntry('Winner: ', 'winner', 'NONE'));
-    return infoElement;
-  }
-
-  makeInfoEntry(entryLabel, entryID, entryDefault) {
-    const infoEntry = document.createElement('p');
-    infoEntry.innerHTML = entryLabel;
-
-    const entryContent = document.createElement('span');
-    entryContent.id = entryID;
-    entryContent.innerHTML = entryDefault;
-
-    infoEntry.append(entryContent);
-    return infoEntry;
-  }
-
-  getMarkerPos(pos) {
-    return this.markerPosition;
-  }
-
-  updateMarkerPos(pos) {
-    const markerRow = document.getElementById('markerrow');
-    pos = (pos < 0) ? 0 : (pos > this.numColumns-1) ? this.numColumns-1 : pos;
-    for(var i=0; i<markerRow.children.length; ++i) {
-      markerRow.children[i].innerHTML = (i == pos) ? '*' : '';
-    }
-    this.markerPosition = pos;
-  }
-
-  updateBoardPiece(i, j, sym) {
-    const boardPositionElement = document.getElementById('pos('+i+','+j+')');
-    boardPositionElement.innerHTML = sym;
-  }
-
-  updateActivePlayer(player) {
-    const activePlayerElement = document.getElementById('activeplayer');
-    activePlayerElement.innerHTML = player;
-  }
-
-  updateWinner(player) {
-    const winnerElement = document.getElementById('winner');
-    winnerElement.innerHTML = player;
-  }
+  console.log('wsocket1: ' + wsocket);
+  return wsocket;
 }
 
-class ConnectFourGame {
-  constructor() {
-    this.htmlElement = new ConnectFourHTMLTable();
-    this.displayHTML = this.htmlElement.root;
-  }
-
-  update (state, activePlayer, winner) {
-    this.htmlElement.updateActivePlayer(activePlayer);
-    this.htmlElement.updateWinner(winner);
-    for (var i=0; i<state.length; ++i) {
-      for (var j=0; j<state[i].length; ++j) {
-        const sym = state[i][j] == null ? '_' : state[i][j] == 0 ? '@' : 'O';
-        this.htmlElement.updateBoardPiece(i, j, sym);
-      }
-    }
-  }
-
-  moveMarker (pos) {
-    this.htmlElement.updateMarkerPos(pos);
-  }
-
-  markerPosition () {
-    return this.htmlElement.getMarkerPos();
-  }
+function send(wsocket, text) {
+  const message = {
+    type: 'chat',
+    content: text,
+    date: new Date(),
+  };
+  wsocket.send(JSON.stringify(message));
 }
 
-module.exports = {
-  ConnectFourGame,
-};
+function sendMove(wsocket, col) {
+  const message = {
+    type: 'game',
+    content: {col,},
+    date: new Date(),
+  };
+  wsocket.send(JSON.stringify(message));
+}
+
+function sendReset(wsocket) {
+  const message = {
+    type: 'game',
+    content: {reset: true,},
+    date: new Date(),
+  };
+  wsocket.send(JSON.stringify(message));
+}
+
+/* Login and setup websocket */
+
+const commentField = document.querySelector('#commentfield');
+var wsocket;
+function loginSuccess() {
+  wsocket = connect();
+
+  commentField.addEventListener('keyup', (evt) => {
+    if (evt.keyCode == 13) {
+      send(wsocket, commentField.value);
+      commentField.value = '';
+    }
+  });
+  
+  document.addEventListener('keyup', (evnt) => {
+    if (document.activeElement.tagName == 'INPUT')
+      return;
+    if (evnt.keyCode == 72)
+      board.moveMarker(board.markerPosition() - 1);
+    else if (evnt.keyCode == 76)
+      board.moveMarker(board.markerPosition() + 1);
+    else if (evnt.keyCode == 13)
+      sendMove(wsocket, board.markerPosition());
+    else if (evnt.keyCode == 27)
+      sendReset(wsocket);
+  });
+}
+
+const logoutLink = document.querySelector('#logoutlink');
+logoutLink.onclick = () => {return Utils.logout();};
+Login.authorizeClient(loginSuccess);

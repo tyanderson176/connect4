@@ -93,12 +93,14 @@ const authThen = policy => {
   return authorizedPolicy;
 }
 
-const rateLimit = policy => {
-  const ratePolicy = (request, response) => {
-      policy(request, response);
+const sendActiveGames = (request, response) => {
+  games = {
+    '1' : {player1:'user1', player2:null},
+    '3a': {player1:'xXSephirothXx', player2:'bob'},
+    '4' : {player1:'Trump', player2:'Xi'},
   }
-  return ratePolicy;
-  //just a placeholder for now
+  response.write(JSON.stringify(games)); 
+  response.end();
 }
 
 /* server policies */
@@ -113,10 +115,7 @@ let policies = {
   '/login/authCookie': Utils.authorizeCookie,
   '/logout'    : Utils.logout,
 
-  '/newuser.html' : serveFile,
-  '/newuser.js'   : rateLimit(serveFile),
-  '/newuser/add'  : Utils.newUser,
-
+  '/startMenu/sendActiveGames' : sendActiveGames,
   '/game.js' : serveFile,
 
   '/styles/PlayfairDisplay-Regular.ttf': serveFile,

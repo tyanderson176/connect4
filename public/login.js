@@ -15,11 +15,11 @@ function authorizeClient(success) {
   });
 }
 
-function sendCredentials(elem, success) {
-  //send credentials in elem DOM object
-  const username = elem.querySelector('#username').value;
-  const password = elem.querySelector('#password').value;
-  const loginMessage = elem.querySelector('#loginmessage');
+function sendCredentials(loginWindow, success) {
+  //send credentials in loginWindow DOM object
+  const username = loginWindow.querySelector('#username').value;
+  const password = loginWindow.querySelector('#password').value;
+  const loginMessage = loginWindow.querySelector('#loginmessage');
   const creds = { username, password };
 
   fetch('/login/auth', {
@@ -35,17 +35,11 @@ function sendCredentials(elem, success) {
     if (cert.accepted == false) {
       loginMessage.innerText = 'username/password could not be authenticated';
     } else {
-      elem.parentNode.removeChild(elem);
+      loginWindow.parentNode.removeChild(loginWindow);
       document.cookie = cert.cookie;
       success();
     }
   });
-}
-
-function cleanupThen(elem, proc) {
-  console.log('cleanup?');
-  elem.parentNode.removeChild(elem);
-  proc();
 }
 
 function promptLogin(success) {
