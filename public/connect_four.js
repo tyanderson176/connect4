@@ -4,10 +4,12 @@ class ConnectFourHTMLTable {
     this.numColumns = 7;
     this.numRows = 6;
     
-    this.root.append(this.gameInfoElement());
+//    this.root.append(this.gameInfoElement());
     this.root.append(this.boardElement());
     
     this.markerPosition = 0;
+    this.sym1 = '@';
+    this.sym2 = 'O';
   }
 
   boardElement() {
@@ -17,29 +19,31 @@ class ConnectFourHTMLTable {
     const markerRow = document.createElement('tr');
     markerRow.id = 'markerrow';
     for(var i=0; i<this.numColumns; ++i) {
-      markerRow.append(this.makeTableEntry( (i == 0) ? '*' : '', 'marker'+i));
+      markerRow.append(this.makeTableEntry( (i == 0) ? '*' : '', 'marker'+i, 'odd'));
     }
     table.append(markerRow);
 
     for(var i=0; i<this.numRows; ++i) {
       const rowElement = document.createElement('tr');
       for(var j=0; j<this.numColumns; ++j) {
-        rowElement.append(this.makeTableEntry('_', 'pos(' + i + ',' + j + ')'));
+        const even = (i + j)%2 == 0 ? 'even' : 'odd';
+        rowElement.append(this.makeTableEntry('', 'pos(' + i + ',' + j + ')', even));
       }
       table.append(rowElement);
     }
 
     const columnLabels = document.createElement('tr');
     for(var i=0; i<this.numColumns; ++i) {
-      columnLabels.append(this.makeTableEntry(i+1, 'label'+i));
+      columnLabels.append(this.makeTableEntry(i+1, 'label'+i, 'odd'));
     }
     table.append(columnLabels);
 
     return table;
   }
 
-  makeTableEntry(content, id) {
+  makeTableEntry(content, id, className) {
     const entry = document.createElement('td');
+    entry.className = 'table-entry-' + className;
     entry.id = id;
     entry.innerHTML = content;
     return entry;
@@ -47,7 +51,7 @@ class ConnectFourHTMLTable {
 
   gameInfoElement() {
     const infoElement = document.createElement('div');
-    infoElement.id = 'gameinfo';
+    infoElement.id = 'gamedata';
     infoElement.append(this.makeInfoEntry('Current Player: ', 'activeplayer', ''));
     infoElement.append(this.makeInfoEntry('Winner: ', 'winner', 'NONE'));
     return infoElement;
@@ -78,9 +82,14 @@ class ConnectFourHTMLTable {
     this.markerPosition = pos;
   }
 
-  updateBoardPiece(i, j, sym) {
+  updateBoardPiece(i, j, state) {
     const boardPositionElement = document.getElementById('pos('+i+','+j+')');
+//    let sym = (state == null) ?  '' : (state == 0 ? this.sym1 : this.sym2);
+    let symClass = 
+      (state == null) ? '' : (state == 0 ? 'circle-black' : 'circle-white');
+    let sym = ` <span class=${symClass}></span> `; 
     boardPositionElement.innerHTML = sym;
+    boardPositionElement.style = (state == 0) ? 'color: black;' : 'color: white;';
   }
 
   updateActivePlayer(player) {
@@ -100,13 +109,10 @@ class ConnectFourGame {
     this.displayHTML = this.htmlElement.root;
   }
 
-  update (state, activePlayer, winner) {
-    this.htmlElement.updateActivePlayer(activePlayer);
-    this.htmlElement.updateWinner(winner);
+  update (state) {
     for (var i=0; i<state.length; ++i) {
       for (var j=0; j<state[i].length; ++j) {
-        const sym = state[i][j] == null ? '_' : state[i][j] == 0 ? '@' : 'O';
-        this.htmlElement.updateBoardPiece(i, j, sym);
+        this.htmlElement.updateBoardPiece(i, j, state[i][j]);
       }
     }
   }
@@ -120,6 +126,123 @@ class ConnectFourGame {
   }
 }
 
+class ConnectFourInfo {
+  constructor() {
+    this.displayHTML = document.createElement('div');
+    this.labelA = 'Black';
+    this.labelB = 'White';
+
+    this.teamElementA = this.makeTeamElement(this.labelA);
+    this.teamElementA.style='float: left';
+    this.teamElementA.id = 'teamelementA';
+
+    this.teamElementB = this.makeTeamElement(this.labelB);
+    this.teamElementB.style='float: right';
+    this.teamElementB.id = 'teamelementB';
+
+    this.displayHTML.append(this.teamElementA);
+    this.displayHTML.append(this.teamElementB);
+    console.log(this.displayHTML.innerHTML);
+  }
+
+  update (playerInfoA, playerInfoB, activePlayer, winner) {
+    const tableWrapperA = document.querySelector('#' + this.labelA + 'wrapper');
+    tableWrapperA.innerHTML = '';
+    tableWrapperA.append(this.makeTeamTable(this.labelA, playerInfoA));
+
+    const tableWrapperB = document.querySelector('#' + this.labelB + 'wrapper');
+    tableWrapperB.innerHTML = '';
+    tableWrapperB.append(this.makeTeamTable(this.labelB, playerInfoB));
+
+    const teamElementA = document.querySelector('#teamelementA');
+    const teamElementB = document.querySelector('#teamelementB');
+    if (winner != null) {
+      (winner == 0 ? teamElementA : teamElementB).className = "team-element-winner";
+      const winnerLabel = (winner == 0 ? this.labelA : this.labelB);
+      document.querySelector('#teamheader_' + winnerLabel).innerHTML =
+        winnerLabel + ' Wins!';
+    } else {
+      teamElementA.className = 
+        activePlayer == 0 ? "team-element-active" : "team-element"; 
+      teamElementA.querySelector(".teamheader").innerHTML = this.labelA;
+
+      teamElementB.className = 
+        activePlayer == 1 ? "team-element-active" : "team-element"; 
+      teamElementB.querySelector(".teamheader").innerHTML = this.labelB;
+    }
+  }
+
+  makeTeamElement(label) {
+    const teamElement = document.createElement('div');
+    teamElement.className = 'team-element';
+
+    const tableWrapper = document.createElement('div');
+    tableWrapper.append(this.makeTeamTable(label, []));
+    tableWrapper.className = 'table-wrapper';
+    tableWrapper.id = label + 'wrapper';
+
+    teamElement.append(this.makeTeamHeader(label));
+    teamElement.append(tableWrapper);
+    teamElement.append(this.makeJoinButton('joinButton' + label));
+    return teamElement;
+  }
+
+  makeTeamHeader(label) {
+    const teamHeader = document.createElement('div'); 
+    teamHeader.id = 'teamheader_' + label; 
+    teamHeader.className = 'teamheader';
+ 
+    teamHeader.innerHTML = label;
+    return teamHeader;
+  }
+
+  makeTeamTable(label, playerInfo) {
+    const teamTable = document.createElement('table');
+    teamTable.className = 'team-table';
+
+/*
+    const headerRow = document.createElement('tr');
+    headerRow.className = 'header-row';
+
+    const teamLabel = document.createElement('th');
+    teamLabel.innerHTML = label;
+    teamLabel.className = 'header';
+    const voteHeader = document.createElement('th');
+    voteHeader.innerHTML = 'vote';
+    voteHeader.className = 'header';
+
+    headerRow.append(teamLabel);
+    headerRow.append(voteHeader);
+    teamTable.append(headerRow);
+*/
+
+    playerInfo.forEach( (playerAndVote) => {
+      const {player, vote} = playerAndVote;
+      teamTable.append(this.makePlayerRow(player, vote));
+    });
+    return teamTable;
+  }
+
+  makePlayerRow(player, vote) {
+    const playerRow = document.createElement('tr');
+    vote = (vote == null) ? '-' : (vote == 'RESET') ? 'RESET' : parseInt(vote) + 1;
+    playerRow.innerHTML = `
+      <td style='text-align: left;'> ${player} </td>
+      <td style='text-align: left;'> ${vote}   </td>
+    `;
+    return playerRow;
+  }
+
+  makeJoinButton(buttonID) {
+    const joinButton = document.createElement('button');
+    joinButton.innerHTML = 'Join Team';
+    joinButton.className = 'join-button';
+    joinButton.id = buttonID;
+    return joinButton;
+  }
+}
+
 module.exports = {
+  ConnectFourInfo,
   ConnectFourGame,
 };

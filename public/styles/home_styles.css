@@ -1,8 +1,9 @@
 body {
   position: relative;
   margin-top: 50px;
-  color: #82E0AA;
-  background-color: #1B1A1A;
+/*  color: #82E0AA; */
+/*  background-color: #F8F8FF; */
+  background-color: gainsboro;
 }
 
 @font-face {
@@ -29,11 +30,21 @@ body {
 
 @font-face {
   font-family: PTMono;
-  src: url('styles/PTMono-Regular.ttf');
+  src: url('PTMono-Regular.ttf');
+}
+
+@font-face {
+  /*font-family: DidactGothic;*/ 
+  src: url('DidactGothic-Regular.ttf');
+}
+
+@font-face {
+  font-family: HindMadurai;
+  src: url('HindMadurai-Light.ttf');
 }
 
 .nav-bar {
-  font-family: PTMono;
+  /*font-family: DidactGothic;*/ 
   font-size: 20px;
   font-weight: bold;
   text-align: right;
@@ -48,73 +59,61 @@ body {
 }
 
 .title {
-  font-family: PTMono;
-
+  /*font-family: DidactGothic;*/ 
 }
 
 .comment {
-  padding-top: 5px;
-  padding-bottom: 5px;
+  background-color: white;
+/*  padding-top: 5px; */
+/*  padding-bottom: 5px; */
   border-bottom: 0px solid gainsboro;
   box-shadow: 0px 0px 0px grey; 
-  font-size: 16px;
-  font-family: PTMono;
+/*  font-size: 16px; */
+  /*font-family: DidactGothic;*/ 
 }
 
 .comment-content {
-  padding-top: 5px;
+  background-color: white;
 }
 
 .comment-header {
-  color: #D2B4DE;
+  background-color: white;
+  font-weight: bold;
 }
 
 .user-tag {
   font-weight: bold;
-/*  color: black; */
 }
 
 .bounding-box {
-  margin-top: 100px;
-  margin-left: 10%;
   position: relative;
-  width: 80%;
-  height: 300px;
+  height: 407px;
+  width: 340px;
+  padding: 5px; 
+  box-shadow: 1px 1px 2px grey; 
+  border-radius: 3px;
+  background-color: white;
+  float: right;
 }
 
-/*
-.comment-bar {
-  font-family: PTMono;
-  margin-left: 0px;
-/*  margin-bottom: 10px;*/
-/*
-  position: absolute;
-  height: 18.5%;
-  width: 80%;
-  bottom: 0;
-  background-color: gainsboro;
-  border: 1px solid black;
-}
-*/
 
 .comment-field {
-  font-family: PTMono;
-  color: white;
-  margin-top: 15px; 
+  color: black;
+  margin: 5px;
+  margin-bottom: 10px;
   width: 90%;
   border-radius: 0px;
   border: 1px solid darkgrey;
   padding: 5px;
-  background-color: white;
   background-color: #1B1A1A;
+  background-color: white;
   position: absolute;
   bottom: 0;
-/*  font-size: 16px; */
 }
 
 /*
 .comment-button {
-  font-family: PTMono;
+  /*font-family: DidactGothic;*/ 
   background-color: lightgrey;
   border: none;
   color: white;
@@ -131,6 +130,7 @@ body {
 */
 
 .comment-box {
+  background-color: white;
   margin-top: 0px;
   margin-bottom: 100px;
   margin-left: 0px;
@@ -141,6 +141,7 @@ body {
 }
 
 .message {
+  background-color: white;
   width: 100%;
   margin: auto;
   padding-top: 10px;
@@ -153,19 +154,149 @@ body {
   background-color: white;
 }
 
-#gameboard {
-  font-family: PTMono;
+#gameinfo {
+/*  background-color: white; */
+  display: block;
   font-size: 20px;
-  border: 1px solid grey;
-/*  margin-left: 40%; */
-/*  margin-right: auto;*/
+/*  border: 1px dashed white; */
+  border-radius: 3px;
+  height: 200px;
+/*  box-shadow: 2px 2px 5px grey;  */
+/*  padding: 10px; */
+/*  background-color: grey; */
+}
+
+#gameboard {
+/*  background-color: white; */
+  /*font-family: DidactGothic;*/ 
+  font-size: 20px;
+  display: block;
+  box-shadow: 1px 1px 2px grey; 
+  padding: 0px;
+  border-radius: 3px;
+  width: 350px;
+  margin-left: auto;
+  margin-right: auto;
 /*  text-align: center;*/
+  float: left;
 }
 
 #gametable {
-  font-family: PTMono;
-  font-size: 20px;
-  margin-left: 40%;
+  /*font-family: DidactGothic;*/ 
+  font-size: 30px;
+  margin-left: auto;
   margin-right: auto;
+  border-spacing: 0;
+}
+
+#gamewrapper {
+  width: 750px;
+  margin-left: 10%;
+}
+
+.table-entry-even {
   text-align: center;
+  width: 50px;
+  height: 50px;
+  background-color: #D2B48C;
+}
+
+.table-entry-odd {
+  text-align: center;
+  width: 50px;
+  height: 50px;
+  background-color: #FFEFD5;/* #FFE4C4;*/
+}
+
+.circle-black {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  background-color: black;
+  display:inline-block;
+  box-shadow: 1px 1px 2px grey;
+}
+
+.circle-white {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  background-color: white;
+  display:inline-block;
+  box-shadow: 1px 1px 2px grey;
+}
+
+/* GAME INFO */
+
+.team-element {
+  /*font-family: DidactGothic;*/ 
+  background-color: white;
+  text-align: center;
+  width: 370px;
+  border-radius: 3px;
+  box-shadow: 1px 1px 2px grey;
+}
+
+.team-element-active {
+  /*font-family: DidactGothic;*/ 
+  background-color: white;
+  text-align: center;
+  width: 370px;
+  border-radius: 3px;
+  box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+}
+
+.team-element-winner {
+  /*font-family: DidactGothic;*/ 
+  background-color: white;
+  text-align: center;
+  width: 370px;
+  border-radius: 3px;
+  animation: blueshadow 1s linear infinite;
+}
+
+@keyframes blueshadow {
+  50% { box-shadow: 0 0 10px rgba(81, 203, 238, 1); }
+}
+
+.team-table {
+  width: 100%;
+}
+
+.teamheader {
+  text-align: left;
+  font-size: 20px;
+  border-bottom: 1px solid gainsboro;
+  background-color: #F0F0F0;
+  padding: 4px;
+}
+
+.teamheader-active {
+  text-align: left;
+  font-size: 20px;
+  border-bottom: 1px solid gainsboro;
+  background-color: #F0F0F0;
+  padding: 4px;
+}
+
+.join-button {
+  margin-bottom: 10px;
+  border-radius: 2px;
+  border: none;
+  background-color: #61A87F;
+  color: white;
+  text-align: center;
+  font-size: 16px;
+  padding: 4px;
+  width: 100px;
+  transition: all 0.2s;
+  margin: 5px;
+}
+
+.join-button:hover {
+  background-color: #82E0AA;
+}
+
+.table-wrapper {
+  height: 140px;
 }

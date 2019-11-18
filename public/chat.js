@@ -20,12 +20,24 @@ function newContent(text) {
   return content;
 }
 
+/*
 function newComment(user, text, time) {
   const comment = document.createElement('div');
   comment.className = 'comment';
 
   comment.append(newHeader(user, time));
   comment.append(newContent(text));
+  return comment;
+}
+*/
+
+function newComment(user, text, time) {
+  const comment = document.createElement('div');
+  comment.className = 'comment';
+  comment.innerHTML += `
+    <span class='comment-header'> ${user}: </span>
+    <span class='comment-content'> ${text} </span>
+  `; 
   return comment;
 }
 
@@ -43,9 +55,9 @@ function scrollToBottom() {
 }
 
 function post(data) {
-  const {username, type, content, time} = data;
+  const {username, type, body, time} = data;
   const atBottom = atScrollBottom();
-  commentBox.append(newComment(username, content, time));
+  commentBox.append(newComment(username, body, time));
   if (atBottom)
     scrollToBottom();
 }

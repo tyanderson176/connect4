@@ -1,0 +1,283 @@
+const WebSocket = require('ws');
+
+const Utils = require('../utils.js'),
+      ConnectFour = require('./connect_four.js'),
+      AI = require('./minimax.js');
+
+const BOT_ID = 'AiBot';
+
+/*
+Meant to encapsulate the type/format of messages
+
+E.g. clients talk in chatrooms via messages, which may be video, may contain
+the time, etc.
+*/
+
+function makeMessage(author, type, content, time) {
+  const message = {
+    username: author,
+    type,
+    body: content,
+    time,
+  };
+  return message;
+}
+
+function Client(wsocket, request) {
+  this.wsocket = wsocket;
+  this.id = Utils.getCookieID(request);
+  this.playerID = null;
+  this.vote = null;
+  this.send = (message) => {
+    wsocket.send(JSON.stringify(message)); 
+  };
+  this.open = () => {
+    return wsocket.readyState == WebSocket.OPEN;
+  };
+}
+
+class BotClient {
+  constructor() {
+    this.maxDepth = 6;
+    this.ai = new AI.Conn4Minimax(this.maxDepth);
+
+    this.id = BOT_ID;
+    this.playerID = null;
+    this.vote = null;
+  }
+
+  send (message) {
+    console.log('Bot received message:');
+    console.log(message);
+    if (message.body.team1) {
+      console.log('team1: ' + JSON.stringify(message.body.team1));
+      console.log('team2: ' + JSON.stringify(message.body.team2));
+    }
+
+    if (message.type == 'game') {
+      const body = message.body;
+      const board = body.board ? body.board.slice().reverse() : null;
+      const team1Players = body.team1, team2Players = body.team2;
+      const botActive = (body.activePlayer == this.playerID);
+      const position = board && botActive 
+                       ? this.ai.solve(board, this.playerID) : null; 
+      const team1Size = team1Players.length - (this.playerID == 0 ? 1 : 0);
+      const team2Size = team2Players.length - (this.playerID == 1 ? 1 : 0);
+      const newPlayerID = team1Size > team2Size ? 1 : 0;
+      const updatePID = 
+        body.activeGame == false && board == null && this.playerID == null;
+
+      const reply = {
+        type: 'game',
+        date: new Date(), 
+      };
+      if (position != null) 
+        reply.instruction = position;
+      if (updatePID) 
+        reply.newPlayerID = newPlayerID;
+
+      if (reply.instruction != null || reply.newPlayerID != null) { 
+        console.log('Bot sending:');
+        console.log(reply);
+        return () => {
+          console.log('Bot cont.');
+          this.handle(reply);
+        }
+      }
+    }
+  };
+  
+  open () { return true; }
+}
+
+class Gameroom {
+  constructor(id) {
+    this.id = id;
+    this.clients = {};
+
+    this.gameInstance = new ConnectFour.GameInstance();
+  }
+
+  broadcast(message, cache) {
+    if (cache)
+      Utils.logMessage(this.id, message);
+    let botCont = null;
+    for(let id in this.clients) {
+      const other = this.clients[id];
+
+      if (id == BOT_ID) botCont = other.send(message);
+
+      //delete websocket from clients if not open
+      if (!other.open())
+        delete this.clients[id];
+      else if (id != BOT_ID)
+        other.send(message);
+    }
+    if (botCont) botCont();
+  }
+
+  gameState(sender, updateBoard) {
+/*
+    const team1 = [], team2 = [];
+    for (const [id, client] of Object.entries(this.clients)) { 
+      const username = Utils.usernameOf(id) ? Utils.usernameOf(id) : 'Anon';
+      if (client.playerID == 0)
+        team1.push({player: username, vote: client.vote});
+      else
+        team2.push({player: username, vote: client.vote});
+    }
+*/
+
+    const team1Players = [], team2Players = [];
+    Object.entries(this.clients).forEach( (clientInfo) => {
+        let [id, client] = clientInfo;
+        const username = Utils.usernameOf(id) ? Utils.usernameOf(id) : 'Bot';
+        if (client.playerID != null) {
+            const clientTeam = client.playerID == 0 ? team1Players : team2Players;
+            clientTeam.push({player : username, vote: client.vote});
+        }
+    });
+    
+    const state = {
+      type: 'game',
+      activeGame: this.gameInstance.activeGame,
+      activePlayer: this.gameInstance.activePlayer,
+      winner: this.gameInstance.winner,
+//      sender,
+      team1: team1Players,
+      team2: team2Players,
+    };
+    if (updateBoard) state.board = this.gameInstance.board;
+
+    return makeMessage(this.id, 'game', state, Date()); 
+  }
+
+  turnFinished() {
+    const activePlayer = this.gameInstance.activePlayer;
+    for(var id in this.clients) {
+      const client = this.clients[id];
+      if (client.playerID == activePlayer && client.vote == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  mostFreqInstruc() {
+    const activePlayer = this.gameInstance.activePlayer;
+    const count = {};
+    Object.values(this.clients).forEach( (client) => {
+      if (client.playerID == activePlayer) {
+        if (!(client.vote in count))
+          count[client.vote] = 0;
+        count[client.vote]++; 
+      }
+    });
+
+    var mostFrequent = 0, maxFreq = 0;
+    Object.entries(count).forEach( (pair) => {
+      const [sug, freq] = pair;
+      if (freq > maxFreq) {
+        mostFrequent = sug;
+        maxFreq = freq;
+      }
+    });
+    return mostFrequent;
+  }
+
+  teamsSelected() {
+    var team1Empty = true, team2Empty = true;
+    Object.values(this.clients).forEach( (client) => {
+      if (client.playerID == null)
+        return false;
+      if (client.playerID == 0)
+        team1Empty = false;
+      if (client.playerID == 1)
+        team2Empty = false;
+    });
+    return !(team1Empty || team2Empty);
+  }
+    
+  resetTeams() {
+    //TODO: Start clock?
+    Object.values(this.clients).forEach( (client) => {
+      client.playerID = null;
+    });
+  }
+
+  add(client) {
+    this.clients[client.id] = client;
+    //client.playerID = Object.keys(this.clients).length%2;
+
+    if (client.id != BOT_ID) {
+      const loggedMessages = Utils.loggedMessages(this.id);
+      loggedMessages.forEach( message => { client.send(message);});
+      const text = `${Utils.usernameOf(client.id)} entered the chat.`;
+      const enterMessage = makeMessage(this.id, 'chat', text, Date());
+      this.broadcast(enterMessage, true);
+      client.send(this.gameState(client.id, true));
+//      this.broadcast(this.gameState(client.id, true), false);
+    }
+
+    client.handle = (message) => {
+      console.log('Message received: ');
+      console.log(JSON.stringify(message));
+
+      if (message.type == 'chat') {
+        if (!message.text) return;
+
+        const username = Utils.usernameOf(client.id);
+        message = makeMessage(username, 'chat', message.text, message.date);
+        this.broadcast(message, true);
+      } 
+
+      if (message.type == 'game') {
+        if (!this.gameInstance.activeGame) { 
+          if (message.newPlayerID == null) return;
+
+          client.playerID = message.newPlayerID;
+          console.log('ClientID: ' + client.id);
+          console.log('newPlayerID: ' + message.newPlayerID);
+          if (this.teamsSelected()) { 
+            console.log('GAME STARTED\n');
+            this.gameInstance.start();
+          }
+          this.broadcast(this.gameState(this.id, false), false);
+          console.log('Broadcasted gameState: ');
+          console.log(JSON.stringify(this.gameState(this.id, false)))
+        }
+        else if (this.gameInstance.activeGame) {
+          if (message.instruction == null) return;
+
+          console.log('Received instruction' + message.instruction);
+          if (client.playerID == this.gameInstance.activePlayer) { 
+                client.vote = message.instruction;
+          }
+          if (this.turnFinished()) {
+            const activePlayer = this.gameInstance.activePlayer;
+            const instruction = this.mostFreqInstruc();
+            if (this.gameInstance.tryInstruction(instruction, activePlayer)) {
+              Object.values(this.clients).forEach( (client) => {
+                client.vote = null;
+              });
+              //Update AI's vote here
+            }
+            console.log('Finished Turn');
+            this.broadcast(this.gameState(client.id, true), false);
+          }
+          if (!this.gameInstance.activeGame) {
+             console.log('***\nRESET TEAMS\n***')
+             this.resetTeams();
+          }
+          this.broadcast(this.gameState(client.id, false), false);
+        }
+      }
+    };
+  }
+}
+
+module.exports = {
+  Gameroom,
+  Client,
+  BotClient,
+};

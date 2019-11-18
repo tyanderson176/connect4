@@ -93,16 +93,6 @@ const authThen = policy => {
   return authorizedPolicy;
 }
 
-const sendActiveGames = (request, response) => {
-  games = {
-    '1' : {player1:'user1', player2:null},
-    '3a': {player1:'xXSephirothXx', player2:'bob'},
-    '4' : {player1:'Trump', player2:'Xi'},
-  }
-  response.write(JSON.stringify(games)); 
-  response.end();
-}
-
 /* server policies */
 
 let policies = {
@@ -115,8 +105,10 @@ let policies = {
   '/login/authCookie': Utils.authorizeCookie,
   '/logout'    : Utils.logout,
 
-  '/startMenu/sendActiveGames' : sendActiveGames,
   '/game.js' : serveFile,
+
+  '/blue_circle.jpg' : serveFile,
+  '/bQ.svg' : serveFile,
 
   '/styles/PlayfairDisplay-Regular.ttf': serveFile,
   '/styles/PlayfairDisplay-Bold.ttf'   : serveFile,
@@ -124,6 +116,8 @@ let policies = {
   '/styles/Merriweather-Bold.ttf'      : serveFile,
   '/styles/Modak-Regular.ttf'          : serveFile,
   '/styles/PTMono-Regular.ttf'         : serveFile,
+  '/styles/HindMadurai-Light.ttf'      : serveFile,
+  '/styles/DidactGothic-Regular.ttf'   : serveFile,
   '/styles/home_styles.css'            : serveFile,
   '/styles/login_styles.css'           : serveFile,
 

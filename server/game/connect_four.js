@@ -21,12 +21,11 @@ class GameInstance {
   }
 
   tryInstruction(instruction, playerID) {
-    if (instruction.reset) {
+    if (instruction == 'RESET') {
       this.start();
       return true;
     }
-    const col = instruction.col
-    return this.execMove(col, playerID);  
+    return this.execMove(instruction, playerID);  
   }
 
   show() {
@@ -48,10 +47,22 @@ class GameInstance {
     console.log(header_str);
   }
 
+  reset() {
+    this.board = makeArray(null, [this.numRows, this.numCols]);
+    this.activeGame = false;
+    this.activePlayer = 0;
+    this.winner = null;
+  }
+
   start() {
+   /*
     this.board = makeArray(null, [this.numRows, this.numCols]);
     this.activeGame = true;
     this.activePlayer = 0;
+    this.winner = null;
+   */
+    this.reset();
+    this.activeGame = true;
   }
 
   run() {
@@ -90,7 +101,7 @@ class GameInstance {
       return false;
     this.board[row][col] = playerID;
 
-    if (this.game_won(row, col)) {
+    if (this.hasWinner()) {
       this.activeGame = false; 
       this.winner = playerID;
     } else if (this.game_tied()){
@@ -101,6 +112,37 @@ class GameInstance {
     return true;
   }
 
+  hasWinnerHelper(dirs, state, countConnected, row, col) {
+    if (!this.inBounds(row, col) || state[row][col] == null) return false;
+    
+    countConnected[row][col] = Array(dirs.length).fill(1);
+    for(var i=0; i<dirs.length; ++i) {
+      const r = row + dirs[i][0], c = col + dirs[i][1];
+      if (this.inBounds(r, c) && (state[r][c] == state[row][col])) {
+        countConnected[row][col][i] = countConnected[r][c][i] + 1;
+        if (countConnected[row][col][i] >= 4)
+          return true;
+      }
+    }
+    return false;
+  }
+
+  hasWinner() {
+    const countConnected = Array(this.numRows).fill(null).map( () => {
+      return Array(this.numCols);
+    });
+
+    const dirs = [[0, -1], [-1, -1], [-1, 0], [-1, 1]];
+    for(var row=0; row<this.numRows; ++row) {
+      for(var col=0; col<this.numCols; ++col) {
+        if (this.hasWinnerHelper(dirs, this.board, countConnected, row, col))
+          return true;
+      }
+    }
+    return false;
+  }
+
+/*
   game_won(row, col) {
     let connected = 0;
     const dirs = [[0,1], [1,0], [1,1], [1,-1]];
@@ -119,6 +161,7 @@ class GameInstance {
     });
     return connected >= 4; 
   }
+*/
 
   game_tied() {
     for(let c=0; c<this.numCols; c++)
