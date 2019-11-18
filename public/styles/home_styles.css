@@ -6,43 +6,6 @@ body {
   background-color: gainsboro;
 }
 
-@font-face {
-  font-family: PlayFair;
-  src: url('PlayfairDisplay-Regular.ttf');
-}
-
-@font-face {
-  font-family: PlayFair;
-  src: url('PlayfairDisplay-Bold.ttf');
-  font-weight: bold;
-}
-
-@font-face {
-  font-family: Merriweather;
-  src: url('Merriweather-Regular.ttf');
-}
-
-@font-face {
-  font-family: Merriweather;
-  src: url('Merriweather-Bold.ttf');
-  font-weight: bold;
-}
-
-@font-face {
-  font-family: PTMono;
-  src: url('PTMono-Regular.ttf');
-}
-
-@font-face {
-  /*font-family: DidactGothic;*/ 
-  src: url('DidactGothic-Regular.ttf');
-}
-
-@font-face {
-  font-family: HindMadurai;
-  src: url('HindMadurai-Light.ttf');
-}
-
 .nav-bar {
   /*font-family: DidactGothic;*/ 
   font-size: 20px;
@@ -56,10 +19,6 @@ body {
 
 .nav-contents {
   margin-right: 50px;
-}
-
-.title {
-  /*font-family: DidactGothic;*/ 
 }
 
 .comment {

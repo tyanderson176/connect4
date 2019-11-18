@@ -1,35 +1,3 @@
-@font-face {
-  font-family: PlayFair;
-  src: url('PlayfairDisplay-Regular.ttf');
-}
-
-@font-face {
-  font-family: PlayFair;
-  src: url('PlayfairDisplay-Bold.ttf');
-  font-weight: bold;
-}
-
-@font-face {
-  font-family: Merriweather;
-  src: url('Merriweather-Regular.ttf');
-}
-
-@font-face {
-  font-family: Merriweather;
-  src: url('Merriweather-Bold.ttf');
-  font-weight: bold;
-}
-
-@font-face {
-  font-family: PTMono;
-  src: url('PTMono-Regular.ttf');
-}
-
-@font-face {
-  font-family: Modak;
-  src: url('Modak-Regular.ttf');
-}
-
 #title {
 /*  font-family: PlayFair; */
   color: white;
