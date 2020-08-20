@@ -4,7 +4,7 @@
   "description": "Play connect4 online",
   "main": "server.js",
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "browserify": "^16.5.0",
     "readline-sync": "^1.4.10",
     "uuidv5": "^1.0.0",
