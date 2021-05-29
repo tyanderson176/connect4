@@ -8,7 +8,7 @@
     "browserify": "^16.5.0",
     "readline-sync": "^1.4.10",
     "uuidv5": "^1.0.0",
-    "ws": "^7.1.2"
+    "ws": "^7.4.6"
   },
   "devDependencies": {},
   "scripts": {
